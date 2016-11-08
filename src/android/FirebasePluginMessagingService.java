@@ -90,8 +90,8 @@ public class FirebasePluginMessagingService extends FirebaseMessagingService {
                     .setContentText(messageBody)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody))
                     .setAutoCancel(true)
-                    .setContentIntent(pendingIntent)
-		    .setDefaults(DEFAULT_ALL);
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent);
 
             int resID = getResources().getIdentifier("notification_icon", "drawable", getPackageName());
             if (resID != 0) {
@@ -102,8 +102,7 @@ public class FirebasePluginMessagingService extends FirebaseMessagingService {
 
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            
-	    notificationManager.cancelAllNotifications();
+
             notificationManager.notify(1, notificationBuilder.build());
         } else {
             bundle.putBoolean("tap", false);
