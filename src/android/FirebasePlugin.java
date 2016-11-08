@@ -33,6 +33,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.Queue;
+import java.util.LinkedList;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
 
@@ -41,10 +43,11 @@ public class FirebasePlugin extends CordovaPlugin {
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private final String TAG = "FirebasePlugin";
+    private final static int MAX_STACK_SIZE = 10;
     protected static final String KEY = "badge";
 
     private static boolean inBackground = true;
-    private static ArrayList<Bundle> notificationStack = null;
+    private static Queue<Bundle> notificationStack = null;
     private static WeakReference<CallbackContext> notificationCallbackContext;
     private static WeakReference<CallbackContext> tokenRefreshCallbackContext;
 
@@ -170,8 +173,11 @@ public class FirebasePlugin extends CordovaPlugin {
     public static void sendNotification(Bundle bundle) {
         if(!FirebasePlugin.hasNotificationsCallback()) {
             if (FirebasePlugin.notificationStack == null) {
-                FirebasePlugin.notificationStack = new ArrayList<Bundle>();
+                FirebasePlugin.notificationStack = new LinkedList<Bundle>();
             }
+	    while (FirebasePlugin.notificationStack.size() > MAX_STACK_SIZE) {
+	    	FirebasePlugin.notificationStack.poll();
+	    }
             notificationStack.add(bundle);
             return;
         }
